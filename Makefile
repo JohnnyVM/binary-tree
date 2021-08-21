@@ -2,9 +2,13 @@ PROJECT_NAME := template
 
 debug ?= false
 ifeq (${debug}, true)
-	COMMON_FLAGS := -g3 -ftrapv -fsanitize=address -fsanitize=leak -fsanitize=undefined
+	COMMON_FLAGS := -g3
 else
 	COMMON_FLAGS := -O2 -D_FORTIFY_SOURCE=2 -DNDEBUG
+endif
+
+ifeq (${sanitize}, true)
+	COMMON_FLAGS += -fsanitize=address -fsanitize=leak -fsanitize=undefined
 endif
 
 profile ?= false

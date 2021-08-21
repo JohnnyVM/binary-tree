@@ -21,7 +21,7 @@ struct binary_tree_node* binary_tree_search(struct binary_tree_node* node, uintm
 	if(node == NULL) { return NULL; }
 
 	while(node != NULL && key != node->key) {
-		if(node->key < key){
+		if(key < node->key){
 			node = node->left;
 		} else {
 			node = node->right;
