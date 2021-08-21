@@ -18,23 +18,21 @@ DEPENDENCIES := $(patsubst %.c,%.d,${SOURCES})
 
 INCLUDE_FLAGS := -I./include -I./simple_dict/include
 WARNING_FLAGS := -Wextra -Wall -Wshadow -Wdouble-promotion -Wpadded \
-	-Wformat=2 -Wformat-truncation -fno-common -Wconversion
+	-Wformat=2 -Wformat-truncation -fno-common -Wconversion -fanalyzer \
+	-Wtrampolines
 CFLAGS += ${WARNING_FLAGS} ${INCLUDE_FLAGS} ${COMMON_FLAGS}
 export
 
 .PHONY: clean tests coverage library
-library: ${OBJECTS} ${LIBSIMPLE_DICT} | lib
-	ar -rc lib/lib${PROJECT_NAME}.a $^
-
 ${OBJECTS}: %.o: %.c
 	${CC} -Werror ${CFLAGS} -MMD -c $< -o $@
+
+library: ${OBJECTS} ${LIBSIMPLE_DICT} | lib
+	ar -rc lib/lib${PROJECT_NAME}.a $^
 
 tests: ${OBJECTS}
 	${MAKE} -C tests tests
 	LSAN_OPTIONS=verbosity=1:log_threads=1 ./tests/tests
-
-${LIBSIMPLE_DICT}:
-	${MAKE} -C simple_dict library
 
 lib:
 	mkdir lib
@@ -42,5 +40,5 @@ lib:
 -include $(DEPENDENCIES)
 
 clean:
-	rm -rf ${OBJECTS} ${DEPENDENCIES} lib
+	-rm -rf ${OBJECTS} ${DEPENDENCIES} lib
 	-$(MAKE) -C tests clean
